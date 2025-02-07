@@ -337,7 +337,7 @@ To configure and automate the job for multiple tables with different retention p
             -- Repeat similar steps for other tables, ensuring foreign key constraints are handled
             -- ...
         END;
-```
+     ```
 
 2. **Create a Scheduled Job Using Oracle Scheduler**
 
@@ -378,6 +378,7 @@ To configure and automate the job for multiple tables with different retention p
     ```
 
 By following these steps, you can configure and automate the purging and archiving process for multiple tables with different retention periods, ensuring efficient data management and compliance with retention policies while respecting foreign key relationships.
+
 
 ## Impact of Range Partitioning on DML and Queries
 
@@ -423,5 +424,4 @@ By following these steps, you can configure and automate the purging and archivi
 - **Indexing**: Ensure that appropriate indexes are in place to support aggregate queries and take advantage of partitioning.
 
 ### Overall Impact
-
 Range partitioning generally improves the performance and manageability of DML operations and queries. However, it is essential to design the partitioning strategy carefully and monitor the system to ensure that it meets performance and maintenance requirements.
