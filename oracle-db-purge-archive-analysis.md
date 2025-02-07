@@ -379,3 +379,49 @@ To configure and automate the job for multiple tables with different retention p
 
 By following these steps, you can configure and automate the purging and archiving process for multiple tables with different retention periods, ensuring efficient data management and compliance with retention policies while respecting foreign key relationships.
 
+## Impact of Range Partitioning on DML and Queries
+
+### Select Queries
+
+**Benefits:**
+- **Improved Performance**: Range partitioning can significantly improve the performance of select queries by allowing the database to scan only the relevant partitions instead of the entire table.
+- **Partition Pruning**: The database can eliminate partitions that do not match the query criteria, reducing the amount of data scanned.
+
+**Considerations:**
+- **Query Optimization**: Ensure that queries are written to take advantage of partition pruning by including the partition key in the WHERE clause.
+
+### Insert Queries
+
+**Benefits:**
+- **Efficient Data Insertion**: Data is automatically directed to the appropriate partition based on the partition key, making inserts efficient.
+
+**Considerations:**
+- **Partition Maintenance**: Ensure that new partitions are created as needed to accommodate incoming data. This can be automated with interval partitioning.
+
+### Update Queries
+
+**Benefits:**
+- **Localized Updates**: Updates that affect a single partition can be more efficient than those affecting the entire table.
+
+**Considerations:**
+- **Partition Key Updates**: Updating the partition key can be expensive as it may require moving the row to a different partition. Avoid updating the partition key if possible.
+
+### Delete Queries
+
+**Benefits:**
+- **Efficient Deletion**: Dropping a partition is much faster than deleting rows individually, making it efficient for bulk deletions.
+
+**Considerations:**
+- **Partition Dropping**: Ensure that the partition to be dropped does not contain any data that needs to be retained.
+
+### Aggregate Queries
+
+**Benefits:**
+- **Parallel Processing**: Aggregate queries can benefit from parallel processing across partitions, improving performance.
+
+**Considerations:**
+- **Indexing**: Ensure that appropriate indexes are in place to support aggregate queries and take advantage of partitioning.
+
+### Overall Impact
+
+Range partitioning generally improves the performance and manageability of DML operations and queries. However, it is essential to design the partitioning strategy carefully and monitor the system to ensure that it meets performance and maintenance requirements.
