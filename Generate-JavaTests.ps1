@@ -95,31 +95,46 @@ function Build-JavaPrompt {
         $pomDeps | ForEach-Object { "$($_.groupId):$($_.artifactId):$($_.version)" } -join "; "
     } else { "No pom.xml found or unable to parse dependencies" }
 
-    $prompt = @"
-You are an expert Java developer and test writer. Generate a JUnit 5 test class for the following Java source file. The application uses Spring Boot and H2 in-memory DB for integration tests. The generated test should:
+   $prompt = @"
+You are an expert Java developer and unit test writer. Generate a comprehensive JUnit 5 test class for the given Java source file. 
+Follow these strict requirements:
 
-- Place tests in a package matching the source class's package.
-- Donot Use Spring Boot Test annotations when necessary (e.g., @SpringBootTest, @DataJpaTest, @WebMvcTest) 
-- Use only mockito and mock data for test cases.
-- Try to generate the testcases that covers 85% of code.
-- Generate mock data as well, based on the if conditions in the code.
-- Create tests for public methods, focusing on typical edge cases, happy path, and at least one negative case.
-- Include imports, @BeforeEach setup, and necessary mocking wiring.
-- Use AssertJ for assertions (or JUnit assertions if necessary) or use Spring assertions
-- Ensure the test class filename ends with "Test" and the test methods are annotated with @Test.
+1. **Test Framework & Structure**
+   - The project uses Spring Boot and H2 in-memory DB, but unit tests must use **Mockito or Powermock only** (no @SpringBootTest, @DataJpaTest, or @WebMvcTest).
+   - Place the generated test in the same package as the source file.
+   - Test class name must end with `Test`.
 
-Project dependency summary (from pom.xml):
+2. **Test Coverage & Design**
+   - Target **85% or higher code coverage**.
+   - Include tests for:
+     - All public methods
+     - Edge cases, negative paths, and exceptional conditions
+     - Conditional branches (if/else, null checks, boundary values)
+   - Generate **mock data intelligently** based on if-conditions and logical branches in the code.
+
+3. **Mocking & Assertions**
+   - Use **Mockito** for mocking all dependencies (`@Mock`, `@InjectMocks`, `MockitoAnnotations.openMocks(this)` in @BeforeEach).
+   - Verify interactions with mocks using `verify()`.
+   - Use **AssertJ** (preferred) or JUnit assertions for result validation.
+   - Include both positive and negative test scenarios.
+
+4. **Code Style**
+   - Include all necessary imports.
+   - Use clear and meaningful method names (e.g., `shouldReturnUser_whenUserExists()`).
+   - Keep the test readable and realistic, matching domain logic.
+   - Return **only** the complete test class code with no explanations, comments, or wrapping text.
+
+**Project Dependency Summary (from pom.xml):**
 $depsText
 
-Source file path: $relPath
+**Source File Path:** $relPath
 
-Source file contents:
+**Source File Contents:**
 ----
 $fileSnippet
 ----
-
-Return only the generated Java test class code (no analysis). Do not include extra wrappers or comments outside the Java file.
 "@
+
     return $prompt
 }
 
