@@ -310,3 +310,50 @@ foreach ($f in $tsFiles) {
 }
 
 Write-Host "Done. Generated tests for: Java($($javaFiles.Count)), Angular($($tsFiles.Count))"
+$apiKey = "<YOUR_API_KEY>"
+$chatUrl = "https://api.openai.com/v1/chat/completions"
+
+$body = @{
+    model = "gpt-4o-mini"
+    messages = @(
+        @{ role="system"; content="You are an expert Java developer and test writer." }
+        @{ role="user"; content="Generate JUnit test class for MyClass.java" }
+    )
+    stream = $true
+} | ConvertTo-Json -Depth 10
+
+# HttpClient
+$client = [System.Net.Http.HttpClient]::new()
+$client.DefaultRequestHeaders.Add("Authorization", "Bearer $apiKey")
+$client.DefaultRequestHeaders.Add("Accept", "text/event-stream")
+
+$content = [System.Net.Http.StringContent]::new($body, [System.Text.Encoding]::UTF8, "application/json")
+
+$stream = $client.PostAsync($chatUrl, $content, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result.Content.ReadAsStreamAsync().Result
+
+$outputFile = "GeneratedTest.java"
+$fs = [System.IO.File]::Open($outputFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write)
+
+$reader = [System.IO.StreamReader]::new($stream)
+
+while (-not $reader.EndOfStream) {
+    $line = $reader.ReadLine()
+    if ($line -and $line -ne "") {
+        # Each line may be like: "data: {json_chunk}"
+        if ($line.StartsWith("data: ")) {
+            $jsonChunk = $line.Substring(6)
+            if ($jsonChunk -ne "[DONE]") {
+                $obj = $jsonChunk | ConvertFrom-Json
+                $text = $obj.choices[0].delta.content
+                if ($text) {
+                    $bytes = [System.Text.Encoding]::UTF8.GetBytes($text)
+                    $fs.Write($bytes, 0, $bytes.Length)
+                }
+            }
+        }
+    }
+}
+
+$fs.Close()
+$reader.Close()
+Write-Host "✅ Streaming test case written to $outputFile"
