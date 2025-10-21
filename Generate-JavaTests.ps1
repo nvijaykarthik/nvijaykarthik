@@ -405,3 +405,72 @@ while (-not $reader.EndOfStream) {
 $fs.Close()
 $reader.Close()
 Write-Host "✅ Streaming test case written to $outputFile"
+
+function Get-LLMResponse {
+    param (
+        [string]$apiKey,
+        [string]$prompt
+    )
+
+    $chatUrl = "https://api.openai.com/v1/chat/completions"
+
+    $body = @{
+        model = "gpt-4o-mini"
+        messages = @(
+            @{ role="system"; content = "You are an expert Java developer and test writer." }
+            @{ role="user"; content = $prompt }
+        )
+        stream = $true
+    } | ConvertTo-Json -Depth 10
+
+    $handler = New-Object System.Net.Http.HttpClientHandler
+    $handler.AllowAutoRedirect = $true
+
+    $client = [System.Net.Http.HttpClient]::new($handler)
+    $client.Timeout = [System.TimeSpan]::FromMinutes(5)   # ⚡ increase timeout
+    $client.DefaultRequestHeaders.Add("Authorization", "Bearer $apiKey")
+    $client.DefaultRequestHeaders.Add("Accept", "text/event-stream")
+
+    $content = [System.Net.Http.StringContent]::new($body, [System.Text.Encoding]::UTF8, "application/json")
+
+    $response = $client.PostAsync($chatUrl, $content, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
+    $stream = $response.Content.ReadAsStreamAsync().Result
+    $reader = [System.IO.StreamReader]::new($stream)
+
+    $accumulated = ""
+    while (-not $reader.EndOfStream) {
+        $line = $reader.ReadLine()
+        if ($line -and $line.StartsWith("data: ")) {
+            $chunk = $line.Substring(6)
+            if ($chunk -eq "[DONE]") { break }
+            try {
+                $json = $chunk | ConvertFrom-Json
+                $text = $json.choices[0].delta.content
+                if ($text) {
+                    $text = $text -replace '```java','' -replace '```',''
+                    $accumulated += $text
+                }
+            } catch { }
+        }
+    }
+
+    $reader.Close()
+    $client.Dispose()
+    return $accumulated
+}
+
+$start = Get-Date
+Write-Host "Started at $start"
+
+$content = Get-LLMResponse -apiKey $apiKey -prompt "Generate JUnit test for MyClass"
+
+$end = Get-Date
+Write-Host "Ended at $end"
+Write-Host "Time taken: $((New-TimeSpan -Start $start -End $end).TotalSeconds) seconds"
+
+# Write to file
+[System.IO.File]::WriteAllText("MyClassTest.java", $content, (New-Object System.Text.UTF8Encoding $false))
+
+$client.DefaultRequestHeaders.TransferEncodingChunked = $true
+
+$client.DefaultRequestHeaders.Add("Connection", "keep-alive")
