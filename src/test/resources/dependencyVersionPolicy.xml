@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependencyVersionPolicy>
+  <dependency>
+    <groupId>com.example</groupId>
+    <artifactId>example-artifact</artifactId>
+    <minSafeVersion>2.1.0</minSafeVersion>
+    <forceUpdate>false</forceUpdate>
+    <message>Use newer version</message>
+  </dependency>
+</dependencyVersionPolicy>

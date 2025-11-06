@@ -1,0 +1,69 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+hs_err_pid*
+*.log
+
+# Build output
+target/
+build/
+out/
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+maven-status/
+.mvn/wrapper/maven-wrapper.properties
+# keep maven-wrapper.jar in repo if desired; ignore it here if you don't track it
+.mvn/wrapper/maven-wrapper.jar
+
+# Generated sources/resources
+generated-sources/
+generated-resources/
+**/target/generated-sources/
+**/target/generated-resources/
+
+# IDEs
+
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+## Eclipse
+.project
+.classpath
+.settings/
+.recommenders/
+
+## VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*~ 
+*.tmp
+
+# Other common
+/.classpath
+/.factorypath
+/reports/
+coverage/

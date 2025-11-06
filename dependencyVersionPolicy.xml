@@ -1,0 +1,9 @@
+<dependencyVersionPolicy>
+  <dependency>
+    <groupId>com.example</groupId>
+    <artifactId>problematic-lib</artifactId>
+    <minSafeVersion>2.0.0</minSafeVersion>
+    <message>This version has critical vulnerabilities. Upgrade to 2.0.0 or later.</message>
+  </dependency>
+  <!-- Repeat for other dependencies -->
+</dependencyVersionPolicy>

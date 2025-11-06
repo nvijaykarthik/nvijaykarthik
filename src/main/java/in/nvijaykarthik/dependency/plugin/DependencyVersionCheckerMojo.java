@@ -1,32 +1,26 @@
-package in.nvijaykarthik.dependency.plugins;
+package in.nvijaykarthik.dependency.plugin;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+// XML mapping classes for dependencyVersionPolicy.xml
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.Server;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-// XML mapping classes for dependencyVersionPolicy.xml
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @Mojo(name = "check-latest", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class DependencyVersionCheckerMojo extends AbstractMojo {
@@ -36,13 +30,11 @@ public class DependencyVersionCheckerMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${settings}", readonly = true)
     private Settings settings;
-
     /**
      * Comma separated list of groupIds to check. Only dependencies matching these will be checked.
      */
     @Parameter(property = "checkGroupIds", required = false)
     private String checkGroupIds;
-
     /**
      * URL to the XML metadata file with forced updates rules.
      */
@@ -80,18 +72,18 @@ public class DependencyVersionCheckerMojo extends AbstractMojo {
                 DefaultArtifactVersion current = new DefaultArtifactVersion(currentVersion);
                 DefaultArtifactVersion safe = new DefaultArtifactVersion(forcedDep.getMinSafeVersion());
 
-                if (current.compareTo(safe) < 0) {
+                if (current.compareTo(safe) < 0 && forcedDep.isForceUpdate()) {
                     throw new MojoFailureException(String.format(
                             "Dependency %s:%s version %s is below minimum safe version %s. %s",
                             groupId, artifactId, currentVersion, forcedDep.getMinSafeVersion(), forcedDep.getMessage()
                     ));
-                } else {
-                    getLog().info(String.format("Dependency %s:%s version %s meets minimum safe version %s.",
+                } else if (current.compareTo(safe) < 0) {
+                    getLog().warn(String.format("Dependency %s:%s version %s meets minimum safe version %s.",
                             groupId, artifactId, currentVersion, forcedDep.getMinSafeVersion()));
                 }
             } else {
                 // Here you could add logic for warnings or info about old versions
-                getLog().info(String.format("Dependency %s:%s version %s has no forced update rule defined.",
+                getLog().debug(String.format("Dependency %s:%s version %s has no forced update rule defined.",
                         groupId, artifactId, currentVersion));
             }
         }
@@ -136,6 +128,7 @@ public class DependencyVersionCheckerMojo extends AbstractMojo {
             private String groupId;
             private String artifactId;
             private String minSafeVersion;
+            private boolean forceUpdate;
             private String message;
 
             @XmlElement
@@ -172,6 +165,15 @@ public class DependencyVersionCheckerMojo extends AbstractMojo {
 
             public void setMessage(String message) {
                 this.message = message;
+            }
+
+            public boolean isForceUpdate() {
+                return forceUpdate;
+            }
+
+            @XmlElement
+            public void setForceUpdate(boolean forceUpdate) {
+                this.forceUpdate = forceUpdate;
             }
         }
     }
