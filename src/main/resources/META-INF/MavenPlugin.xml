@@ -1,0 +1,28 @@
+<plugin>
+  <name>Dependency Version Checker</name>
+  <description>Checks for outdated or vulnerable dependencies</description>
+  <version>1.0-SNAPSHOT</version>
+  <mojos>
+    <mojo>
+      <goal>check-latest</goal>
+      <implementation>in.nvijaykarthik.dependency.DependencyVersionCheckerMojo</implementation>
+      <phase>verify</phase>
+      <requiresProject>true</requiresProject>
+      <threadSafe>true</threadSafe>
+      <parameters>
+        <parameter>
+          <name>checkGroupIds</name>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <description>Comma separated list of groupIds to check</description>
+        </parameter>
+        <parameter>
+          <name>versionPolicyXmlUrl</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <description>URL to XML policy metadata file</description>
+        </parameter>
+      </parameters>
+    </mojo>
+  </mojos>
+</plugin>
