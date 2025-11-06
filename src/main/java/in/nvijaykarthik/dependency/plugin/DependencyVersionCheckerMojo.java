@@ -40,13 +40,7 @@ public class DependencyVersionCheckerMojo extends AbstractMojo {
      */
     @Parameter(property = "checkGroupIds", required = false)
     private String checkGroupIds;
-    /**
-     * The policy XML is resolved from the project's configured remote
-     * repositories (as defined in the POM or settings.xml). The mojo will
-     * look for the file at: ${repoUrl}/in/nvijaykarthik/dependency/policy/dependencyVersionPolicy.xml
-     */
-    @Parameter(property = "versionPolicyUrl", required = false) 
-     private String versionPolicyUrl;
+
 
     /**
      * GroupId under which the policy file is hosted in the remote repository.
