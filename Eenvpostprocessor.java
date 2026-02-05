@@ -6,6 +6,7 @@ import org.springframework.core.env.MapPropertySource;
 
 import java.util.HashMap;
 import java.util.Map;
+//org.springframework.boot.env.EnvironmentPostProcessor=com.example.VaultLogicProcessor
 
 public class VaultValidationPostProcessor implements EnvironmentPostProcessor, Ordered {
 
