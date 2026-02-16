@@ -784,3 +784,570 @@ Use markdown.
 This session plan gives you a **progressive journey** from raw text to structured markdown, with concrete, runnable examples. Attendees will leave with a new mindset: **prompts are not just questions – they are mini‑programs that orchestrate the LLM’s behaviour.**
 
 Good luck with your session! 🚀
+
+
+Great — let’s make this **concrete, realistic, and mechanical**, so you can *see* the thinking loops instead of just reading about them.
+
+Below are **deep, step-by-step, production-style examples** for both:
+
+---
+
+# 🧠 Chain-of-Thought (CoT) — Deep Example
+
+### Problem Type
+
+Multi-step reasoning (math + logic)
+
+---
+
+## Example Question
+
+```
+A company has 3 servers.
+Each server can process 120 requests per minute.
+Traffic increases by 25%.
+How many total requests per minute must the system handle after increase?
+Let's think step by step.
+```
+
+---
+
+## Model Response with Chain-of-Thought
+
+```
+Step 1: Find current total capacity.
+3 servers × 120 requests per minute = 360 requests per minute.
+
+Step 2: Find 25% increase.
+25% of 360 = 0.25 × 360 = 90.
+
+Step 3: Add increase to original.
+360 + 90 = 450.
+
+Final Answer: 450 requests per minute.
+```
+
+---
+
+## Why This Is Powerful
+
+Without CoT, model might guess:
+
+```
+Final Answer: 450
+```
+
+But:
+
+* You don’t know *how*
+* Errors are harder to detect
+
+With CoT:
+
+* You see every transformation
+* Debuggable
+* More accurate
+
+---
+
+## Another CoT Example (Reasoning)
+
+### Question
+
+```
+If all Kafka consumers are message processors,
+and some message processors are written in Java,
+can we conclude that some Kafka consumers are written in Java?
+Let's think step by step.
+```
+
+### Answer
+
+```
+All Kafka consumers ⊆ message processors.
+Some message processors ⊆ Java programs.
+
+These two sets overlap at message processors,
+but there is no guarantee the Java ones are Kafka consumers.
+
+Therefore, we cannot conclude.
+
+Final Answer: No.
+```
+
+---
+
+### Mental Model
+
+```
+Problem → internal reasoning chain → final answer
+```
+
+---
+
+---
+
+# 🔁 ReAct (Reason + Act) — Realistic Example
+
+Now let’s simulate **agent behavior with tools**.
+
+Assume agent has tools:
+
+* SearchDocs(query)
+* GetUserProfile(id)
+* Calculator(expression)
+
+---
+
+## User Question
+
+```
+Does our system already support Kafka transactions?
+```
+
+The answer is inside internal documentation.
+
+---
+
+## ReAct Prompt Skeleton
+
+```
+Thought:
+Action:
+Observation:
+```
+
+---
+
+## ReAct Execution Trace
+
+```
+Thought:
+I do not know if Kafka transactions are supported.
+I should search internal docs.
+
+Action:
+SearchDocs("Kafka transaction support")
+
+Observation:
+"Document A: Kafka is used only for at-least-once processing.
+Exactly-once semantics not enabled."
+
+Thought:
+This mentions exactly-once semantics.
+I need to verify if transactions are enabled anywhere else.
+
+Action:
+SearchDocs("enable.idempotence true")
+
+Observation:
+"Producer configuration: enable.idempotence=false"
+
+Thought:
+Idempotence is disabled, which implies transactions are not enabled.
+I now know the answer.
+
+Final Answer:
+No. Kafka transactions are not currently enabled.
+```
+
+---
+
+## What Just Happened
+
+The model:
+
+1. Thought about what it lacks
+2. Used a tool
+3. Interpreted result
+4. Used another tool
+5. Concluded
+
+This is **agentic reasoning**.
+
+---
+
+---
+
+# 🔁 ReAct with Calculation Example
+
+### Question
+
+```
+What is monthly cost if 3 servers cost $120 each and tax is 18%?
+```
+
+---
+
+### Trace
+
+```
+Thought:
+Need total cost before tax.
+
+Action:
+Calculator("3 * 120")
+
+Observation:
+360
+
+Thought:
+Need to add 18% tax.
+
+Action:
+Calculator("360 * 0.18")
+
+Observation:
+64.8
+
+Thought:
+Add tax to base.
+
+Action:
+Calculator("360 + 64.8")
+
+Observation:
+424.8
+
+Final Answer:
+$424.80
+```
+
+---
+
+---
+
+# 🆚 Core Difference (Intuition)
+
+### Chain-of-Thought
+
+```
+Think → Think → Think → Answer
+```
+
+### ReAct
+
+```
+Think → Do → See → Think → Do → Answer
+```
+
+---
+
+---
+
+# When You Should Use Each
+
+### Use Chain-of-Thought When
+
+* Math
+* Logic
+* Reasoning questions
+* No tools needed
+
+### Use ReAct When
+
+* Need database
+* Need RAG
+* Need web search
+* Need calculations
+* Need multi-step workflows
+
+---
+
+---
+
+# Production Tip (Important)
+
+Many modern systems:
+
+```
+ReAct
+   + 
+Hidden Chain-of-Thought
+```
+
+Meaning:
+
+* Model reasons internally
+* Only final answer shown to user
+
+This prevents exposing internal reasoning.
+
+---
+
+---
+
+# Simple Summary
+
+### Chain-of-Thought
+
+Improves *how well* the model thinks.
+
+### ReAct
+
+Turns the model into a **thinking + acting agent**.
+
+---
+
+If you want next, I can show:
+
+➡️ How ReAct connects to RAG
+➡️ Prompt templates you can copy
+➡️ How to implement ReAct in LangChain / Spring AI
+➡️ Common failure modes
+
+Just tell me 👍
+
+
+
+Excellent choice — **Chain-of-Thought (CoT)** and **ReAct** are two of the most influential reasoning prompt techniques used in modern LLM systems.
+
+Below are **slide-ready, one-technique-per-slide** explanations with:
+
+* Who created it
+* Why it exists
+* What it does
+* When to use
+* How to use
+* Example
+
+---
+
+# 🧠 Slide 1 — Chain-of-Thought (CoT) Prompting
+
+---
+
+## 🧠 Chain-of-Thought Prompting
+
+### Created By
+
+Proposed by researchers at Google including Jason Wei (2022).
+
+---
+
+### Why It Was Created
+
+LLMs often give **correct answers with wrong reasoning** or fail on multi-step problems.
+
+Goal:
+👉 Make the model **show intermediate reasoning steps**.
+
+---
+
+### What It Does
+
+Encourages the model to:
+
+```
+Think step-by-step → then answer
+```
+
+Instead of jumping directly to the final result.
+
+---
+
+### When to Use
+
+* Math problems
+* Logical reasoning
+* Word problems
+* Multi-step decision making
+* Explanations required
+
+---
+
+### How to Use
+
+Add instruction:
+
+```
+"Let's think step by step."
+```
+
+or
+
+```
+"Explain your reasoning."
+```
+
+---
+
+### Example
+
+**Prompt**
+
+```
+If John has 5 apples and buys 3 more, then gives 2 away, how many apples remain?
+Let's think step by step.
+```
+
+**Model Output**
+
+```
+John starts with 5 apples.
+He buys 3 more → 5 + 3 = 8.
+He gives away 2 → 8 - 2 = 6.
+Final answer: 6.
+```
+
+---
+
+### Why It Works
+
+The model is trained on reasoning-like text patterns.
+Triggering those patterns improves accuracy.
+
+---
+
+### Key Benefit
+
+✔️ Better correctness
+✔️ Interpretable reasoning
+
+---
+
+---
+
+# 🔁 Slide 2 — ReAct (Reason + Act) Prompting
+
+---
+
+## 🔁 ReAct Prompting
+
+### Created By
+
+Proposed by researchers from Princeton University and Google (2023).
+
+---
+
+### Why It Was Created
+
+Chain-of-Thought alone **cannot interact with tools** or external data.
+
+Goal:
+👉 Combine **reasoning + action** in one loop.
+
+---
+
+### What It Does
+
+Alternates between:
+
+```
+Thought → Action → Observation → Thought → ...
+```
+
+---
+
+### When to Use
+
+* Tool calling
+* Web search
+* RAG pipelines
+* Agents
+* Multi-step workflows
+
+---
+
+### How to Use
+
+Define format:
+
+```
+Thought:
+Action:
+Observation:
+```
+
+---
+
+### Example
+
+**Prompt**
+
+```
+You are an assistant that can use Search.
+
+Question: Who is CEO of OpenAI?
+```
+
+**Model Output**
+
+```
+Thought: I should search for OpenAI CEO.
+Action: Search("OpenAI CEO")
+Observation: Sam Altman is CEO of OpenAI.
+Thought: I now know the answer.
+Final Answer: Sam Altman.
+```
+
+---
+
+### Why It Works
+
+Model learns to:
+
+* Think about what it needs
+* Choose correct tool
+* Use result
+* Continue reasoning
+
+---
+
+### Key Benefit
+
+✔️ Enables agents
+✔️ Reduces hallucination
+✔️ Handles complex tasks
+
+---
+
+---
+
+# 🆚 Slide 3 — CoT vs ReAct
+
+| Feature       | Chain-of-Thought | ReAct    |
+| ------------- | ---------------- | -------- |
+| Reasoning     | Yes              | Yes      |
+| Tool usage    | No               | Yes      |
+| External data | No               | Yes      |
+| Agents        | No               | Yes      |
+| Simplicity    | Simple           | Moderate |
+
+---
+
+---
+
+# 🧩 Mental Model
+
+**Chain-of-Thought**
+
+```
+Think → Answer
+```
+
+**ReAct**
+
+```
+Think → Do → See → Think → Do → Answer
+```
+
+---
+
+# ✅ Final Summary
+
+* **Chain-of-Thought** improves reasoning quality.
+* **ReAct** enables reasoning **plus actions** (tools, search, RAG).
+* Modern AI agents combine both.
+
+---
+
+If you'd like next, I can show:
+
+➡️ How CoT is combined with RAG
+➡️ Prompt templates you can reuse
+➡️ How LangChain / Spring AI implement ReAct
+➡️ Common failure patterns
+
+Just tell me 👍
+
