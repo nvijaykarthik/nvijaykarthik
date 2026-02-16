@@ -1351,3 +1351,19 @@ If you'd like next, I can show:
 
 Just tell me 👍
 
+
+You are a reasoning agent.
+
+Use the following format:
+
+Thought:
+Action:
+Observation:
+
+Repeat Thought/Action/Observation as needed.
+Finish with:
+
+Final Answer:
+
+Question:
+What is monthly cost if 3 servers cost $120 each and tax is 18%?
