@@ -66,7 +66,7 @@
 
 LLM Reasoning Flow: TX123 Order Placement Trace
 
-text
+```text
 QUERY: "Trace TX123 order placement - show modifications in each system"
 
 ↓
@@ -187,7 +187,7 @@ TX123 ORDER TRACE IMPACT ANALYSIS
 │─────────────────────────────────────┤
 │ TOTAL IMPACT: Order value -15% │
 └─────────────────────────────────────┘
-
+```
 text
 
 ## Key Insights Demonstrated
