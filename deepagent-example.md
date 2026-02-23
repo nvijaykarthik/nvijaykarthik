@@ -64,6 +64,21 @@
     class RagDB1,RagDB2,RagDB3,RagDB4,Crawler rag
 ```
 
+TX123 Query → TopLLM: "Route to Finance+Operations domains"
+  ↓
+FinLLM: "Delegate to Payment+Compliance for billing trace"
+  ↓
+PaymentLLM → RAG DB3: "What rules modify transaction amounts?"
+PaymentLLM → MCP Server1: "Fetch TX123 payment record"
+PaymentLLM reasoning: "Amount +10% → geo-tax rule match → HIGH impact"
+  ↑
+FinLLM aggregates: "Billing impact: +10% due to tax, compliance PASS"
+  ↑
+TopLLM final synthesis: "TX123 total impact across 4 systems"
+
+
+
+
 LLM Reasoning Flow: TX123 Order Placement Trace
 
 ```text
