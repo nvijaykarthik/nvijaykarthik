@@ -24,7 +24,108 @@ we went for selecting azure functions, because kafka provides kafka trigger and 
 The next option is to work on AKS, with spring boot ,  the IP exhaustion can be solved by Kubernetes’s overlay network , so now the cognizant team is working on implementing the  solution .  we provided some best practices like use of JIB a google container tool helps to create docker container from maven without installing docker 
 
 And i am managing 47 repo in GIT , created few products called angle tag (an xml processing tool) can be cloud hosted , feature toggle handling 
-Occasionally I do write some blogs in medium.
+Occasionally I do write some blogs in 
+N. Vijay karthik 
+Ph: +91 9003853927
+Email: nvijaykarthik@gmail.com
+Git repos : https://github.com/nvijaykarthik (47 Repos)
+Tech Blogs : https://medium.com/@nvijaykarthik_19232
+Certifications
+	•	Togaf 9.1 Foundation Certification(8 Sep 2015)
+	•	Java Platform, EE 6 Web Component Developer Certified Expert Exam(09 Feb 2013)
+	•	Oracle Certified Professional, Java SE 6 Programmer	(29 Aug 2012)
+	•	Oracle Certified Associate (Paper I - SQL)  (25 Sep 2006)
+
+
+
+	
+Senior Architect with 19+ years of experience in BFS and Telecom domains, specializing in technology solutions, architecture, and development. Currently leading HUB applications as a Senior Architect - Technology at Cognizant (since July 2016), previously at TATA Consultancy service (Oct 2005- july 2016).
+
+Summary
+	•	Cloud-Native Expertise: Experienced in implementing cloud-native solutions using Java, Spring Boot (other Spring frameworks) and ReactJS on VMware Tanzu (PCF). Successfully executed OSB to PCF migration and MQ9 migration
+	•	Cloud Architecture: Delivering scalable and high-performance solutions by designing application architectures on PCF, Azure, and other cloud platforms while automating business workflows.
+	•	Recognition & Achievements: Recognized as a high performer and role model at Cognizant (2017, 2018, 2019, 2021, 2025) and TCS (2006-2007) for consistently delivering projects on time, within budget, and meeting business requirements.
+	•	Technical Expertise:
+	•	Java 8+, Spring Boot, Spring Integration, Spring Cloud, Spring Data JPA, Spring MVC, Spring Cloud Netflix OSS,Spring txn, Spring security, Oath
+	•	Microservices Architecture, VMware Tanzu (PCF), Middleware Integration, High-Performance Distributed Systems
+	•	Messaging & Streaming: ActiveMQ, Kafka, WebSphere MQ, XML, XPATH etc
+	•	Databases: Oracle 19, Hibernate
+	•	Frontend: ReactJS,Bootstrap css, html
+	•	AI & Innovation: Currently exploring Spring AI and prompt engineering to implement RAG-based multi-agent systems, optimizing business automation and operational workflows.
+	•	Worked in end-to-end telecom implementations.
+
+Technical Skills
+
+Category
+Hands-on Experience With
+Discovering
+OS
+Windows, unix, ubuntu, mac
+
+Programing languages
+Java(8+), Javascript, Html, Css, XML, Xpath, Xslt
+Go, Python
+Frameworks
+Spring Boot, Spring integration, Spring data JPA, Spring transaction, Spring MVC, Other Spring modules(cloud, sleuth etc.,), spring security, oauth2, Hibernate, Spring xml,liquibase
+Reactjs, jquery
+Bootstrap css, Material UI
+Spring AI, Ollama, Deepseak
+Llama, Open AI
+Prompt engineering
+Spring Agentic patterns
+Retrieval augmented generation.
+Open API.
+Database
+Oracle 19, NoSQL (MONGO)
+Mysql
+Message brokers
+IBM Websphere MQ 8, 9.1, Solace 9, Kafka
+Patterns and Platforms
+Micro-Services, Pivotal Cloud Foundry (PCF). Container & Orchestration –Docker , kubernetes.
+ReST, Soap Web services
+Development tools
+Eclipse, visual studio code, Spring Tool Suite, Bit Bucket, Bamboo, JIRA, Gradle 4, Maven 3,  Azure ADO, Confluence pages, MIro board, Github pipeline, github actions and APIs
+
+Current Responsibility
+	•	System Design & Architecture: Designing a large-scale messaging system that processes millions of transactions, ensuring architectural decisions are effectively communicated and implemented by the team.
+	•	Technical Integration: Collaborating with cross-functional teams to design technical workflows, integrating microservices-based architecture for a complex message gateway system using cloud technologies.
+	•	Cloud Development & Deployment: Leading the development, deployment, and optimization of applications on cloud platforms, overseeing production environment setup, performance tuning, and testing support.
+	•	Delivery Leadership: Leading the implementation of solution through Agile SCRUM methodology with Azure ADO,Involved in Backlog refinement, Daily Scrum, Sprint, Code Review and Other required improvements.
+Current Initiatives working on
+Background:  Message gateway(current project) has around 600 microservices(message based) running multi instances on 2 data centers with active-active state.
+	•	Microservice Optimisation :Consolidating the services (reduce the number of services). Developing a framework to improve the performance scalability and resiliency of the application.
+	•	Data Recovery & Resilience: Involved in point in time data recovery solution with DBA, to manage the transaction records and static records efficiently , so that the application can recover asap with very minimal data loss
+	•	Azure Cloud Migration: Involved with client arch team on Migration of the services to Azure cloud, Entra, AKS with on premise Oracle and MQ.
+	•	API First Approach: Involved with client architect on converting some of the functionality to API based. (example: transformation of messages,Rule execution to decide the destination systems) 
+Open forum contributions
+
+Contributions in the medium : Vijaykarthik N – Medium (Ibm-wmq8-special-character-issue-fix,SI event logging, Memory leak analysis, and few more…)
+
+Few contributions in git
+
+	•	https://github.com/nvijaykarthik/ai-agents -> small work on Handling email alerts and auto repair the failed transactions
+	•	https://angletag.github.io/ (https://github.com/angletag/Angle-Tag) -> a spring and xml based product to handle the xml operations
+	•	Spring-boot-microservice-Reference-Implementaion-setup-framework  -> reference implementation of microservices using spring boot and other spring framework
+	•	block-chain-electronic-voting-reference-implementation-using-javascript -> javascript based implementation of blockchain for election voting  (EVM)
+	•	Feature Control center -> solution to manage the feature toggle in the code implementation.(scaled agile process)
+
+Education
+
+Title of the Degree with Branch
+College/University
+Year of Passing
+Bachelor of Technology - Information Technology
+Dr. Mahalingam college of engineering and technology
+Pollachi. Tamilnadu
+Affiliated to Anna University 
+2005
+XII - Higher secondary
+Higher secondary course certificate - Department of government Examinations, Tamilnadu
+2001
+X – Standard
+Matriculation examination- Department of government Examinations, Tamilnadu
+1999
+
 
 
 
