@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <style>
+      .plot { fill: #f5f0e8; stroke: #333; stroke-width: 3; }
+      .setback { fill: #d4e6c3; stroke: #8ba86b; stroke-width: 1; stroke-dasharray: 4; }
+      .wall { fill: none; stroke: #333; stroke-width: 2.5; }
+      .room { fill: #fff9ef; stroke: #555; stroke-width: 1.5; }
+      .room-light { fill: #fef7e0; stroke: #555; stroke-width: 1.5; }
+      .bath { fill: #d9e8f5; stroke: #555; stroke-width: 1.5; }
+      .parking { fill: #e8e0d0; stroke: #777; stroke-width: 1.5; stroke-dasharray: 6; }
+      .stairs { fill: #d9d2b3; stroke: #555; stroke-width: 1.5; }
+      .text-label { font-family: Arial, sans-serif; font-size: 11px; fill: #222; text-anchor: middle; font-weight: bold; }
+      .text-small { font-family: Arial, sans-serif; font-size: 9px; fill: #555; text-anchor: middle; }
+      .text-title { font-family: Arial, sans-serif; font-size: 16px; fill: #000; text-anchor: middle; font-weight: bold; }
+      .dim-line { stroke: #999; stroke-width: 0.8; marker-start: none; marker-end: none; }
+      .dim-text { font-family: Arial, sans-serif; font-size: 8px; fill: #666; text-anchor: middle; }
+      .entrance { fill: #8B4513; }
+      .car { fill: #3a6ea5; opacity: 0.6; }
+      .bike { fill: #c0392b; opacity: 0.6; }
+    </style>
+  </defs>
+
+  <!-- Plot boundary (26ft x 52ft) - scaled: 1ft = 15px -->
+  <!-- Plot size: 390 x 780 -->
+  <!-- Position: X=50, Y=50 -->
+  <!-- Setbacks: East 2.75ft (41px), North 2.75ft (41px) -->
+
+  <!-- Plot outline -->
+  <rect x="50" y="50" width="390" height="780" class="plot" />
+
+  <!-- Setback areas -->
+  <rect x="50" y="50" width="390" height="41" class="setback" fill-opacity="0.5" />
+  <rect x="50" y="50" width="41" height="780" class="setback" fill-opacity="0.5" />
+
+  <!-- North text -->
+  <text x="245" y="35" font-family="Arial" font-size="14" fill="#2c3e50" text-anchor="middle" font-weight="bold">⬆ NORTH ⬆</text>
+  <text x="245" y="48" font-family="Arial" font-size="9" fill="#2c3e50" text-anchor="middle">(2.75 ft setback)</text>
+
+  <!-- East text -->
+  <text x="35" y="450" font-family="Arial" font-size="11" fill="#2c3e50" text-anchor="middle" transform="rotate(-90,35,450)" font-weight="bold">EAST (2.75 ft setback)</text>
+
+  <!-- ========== GROUND FLOOR ========== -->
+  <text x="245" y="85" class="text-title">GROUND FLOOR PLAN</text>
+
+  <!-- Main building envelope (after setbacks: width=349, height=739, X=91, Y=91) -->
+  <!-- But we'll use full plot minus setbacks -->
+
+  <!-- ===== CAR PARKING AREA (West side) ===== -->
+  <!-- Parking length 16ft = 240px, width 18ft = 270px -->
+  <rect x="91" y="91" width="270" height="240" class="parking" />
+  <text x="226" y="150" class="text-label">2 CAR PARKING</text>
+  <text x="226" y="165" class="text-small">16ft length × 18ft width</text>
+
+  <!-- Car 1 -->
+  <rect x="105" y="105" width="90" height="180" class="car" rx="4" />
+  <text x="150" y="200" class="text-small" fill="#fff">Car 1</text>
+
+  <!-- Car 2 -->
+  <rect x="205" y="105" width="90" height="180" class="car" rx="4" />
+  <text x="250" y="200" class="text-small" fill="#fff">Car 2</text>
+
+  <!-- Motorcycles (NW corner of parking) -->
+  <rect x="300" y="100" width="50" height="70" class="bike" rx="3" />
+  <text x="325" y="130" class="text-small" fill="#fff">Bike</text>
+  <text x="325" y="145" class="text-small" fill="#fff">Bike</text>
+
+  <!-- ===== NORTH SIDE (after setback) ===== -->
+  <!-- Common Bathroom (NW) -->
+  <rect x="91" y="340" width="80" height="80" class="bath" />
+  <text x="131" y="370" class="text-label">Common</text>
+  <text x="131" y="385" class="text-label">Bathroom</text>
+  <text x="131" y="400" class="text-small">(NW)</text>
+
+  <!-- Storeroom (West side of common bath) -->
+  <rect x="171" y="340" width="70" height="80" class="room" />
+  <text x="206" y="375" class="text-label">Store Room</text>
+  <text x="206" y="395" class="text-small">(SW zone)</text>
+
+  <!-- ===== LIVING ROOM (NE corner - best Vastu) ===== -->
+  <rect x="241" y="340" width="190" height="160" class="room-light" />
+  <text x="336" y="410" class="text-label">LIVING ROOM</text>
+  <text x="336" y="425" class="text-small">14' × 14'</text>
+  <text x="336" y="440" class="text-small">(N-E corner - max light)</text>
+
+  <!-- Entrance from East side -->
+  <line x1="431" y1="400" x2="431" y2="430" stroke="#8B4513" stroke-width="4" />
+  <text x="445" y="420" class="text-small" fill="#8B4513">Main Entry (East)</text>
+
+  <!-- ===== KITCHEN (SE corner) ===== -->
+  <rect x="241" y="510" width="100" height="120" class="room" />
+  <text x="291" y="555" class="text-label">KITCHEN</text>
+  <text x="291" y="570" class="text-small">10' × 10'</text>
+  <text x="291" y="585" class="text-small">(Agni/SE corner)</text>
+
+  <!-- Kitchen symbols: stove -->
+  <rect x="260" y="530" width="25" height="15" rx="2" fill="#ccc" stroke="#999" />
+  <text x="272" y="541" class="text-small" font-size="7">🔥</text>
+
+  <!-- ===== SERVICE ROOM (SW) ===== -->
+  <rect x="91" y="430" width="140" height="100" class="room" />
+  <text x="161" y="470" class="text-label">Service Room</text>
+  <text x="161" y="485" class="text-small">Washing Machine +</text>
+  <text x="161" y="500" class="text-small">Utility Storage</text>
+
+  <!-- ===== STAIRCASE (SW corner) ===== -->
+  <rect x="91" y="540" width="80" height="80" class="stairs" />
+  <text x="131" y="578" class="text-label">STAIRS</text>
+  <text x="131" y="593" class="text-small">(SW - good)</text>
+  <!-- Stair treads -->
+  <line x1="95" y1="560" x2="165" y2="560" stroke="#888" stroke-width="1.5" />
+  <line x1="95" y1="575" x2="165" y2="575" stroke="#888" stroke-width="1.5" />
+  <line x1="95" y1="590" x2="165" y2="590" stroke="#888" stroke-width="1.5" />
+  <text x="180" y="575" class="text-small">↑ Up</text>
+
+  <!-- ===== ADDITIONAL SPACE ===== -->
+  <!-- Utility/Open area -->
+  <rect x="180" y="510" width="150" height="120" class="room-light" fill="#f0f0e8" />
+  <text x="255" y="555" class="text-small">Foyer/Passage</text>
+
+  <!-- ===== DIMENSIONS - Ground ===== -->
+  <!-- East-West dimension -->
+  <line x1="50" y1="820" x2="440" y2="820" class="dim-line" />
+  <line x1="50" y1="815" x2="50" y2="825" class="dim-line" />
+  <line x1="440" y1="815" x2="440" y2="825" class="dim-line" />
+  <text x="245" y="835" class="dim-text">26 ft (Total Plot Width)</text>
+
+  <!-- North-South dimension -->
+  <line x1="450" y1="50" x2="450" y2="830" class="dim-line" />
+  <line x1="445" y1="50" x2="455" y2="50" class="dim-line" />
+  <line x1="445" y1="830" x2="455" y2="830" class="dim-line" />
+  <text x="465" y="450" class="dim-text">52 ft (Total Plot Length)</text>
+
+  <!-- ========== FIRST FLOOR ========== -->
+  <rect x="50" y="900" width="390" height="780" class="plot" />
+
+  <!-- Setback areas -->
+  <rect x="50" y="900" width="390" height="41" class="setback" fill-opacity="0.5" />
+  <rect x="50" y="900" width="41" height="780" class="setback" fill-opacity="0.5" />
+
+  <text x="245" y="935" class="text-title">FIRST FLOOR PLAN (G+1)</text>
+
+  <!-- ===== MASTER BEDROOM (SW) ===== -->
+  <rect x="91" y="1060" width="160" height="160" class="room-light" />
+  <text x="171" y="1110" class="text-label">MASTER BEDROOM</text>
+  <text x="171" y="1125" class="text-small">(South-West)</text>
+  <text x="171" y="1140" class="text-small">14' × 14'</text>
+
+  <!-- Attached bath for Master (SE within room) -->
+  <rect x="91" y="1150" width="70" height="60" class="bath" />
+  <text x="126" y="1180" class="text-small">Att.</text>
+  <text x="126" y="1193" class="text-small">Bath</text>
+
+  <!-- ===== BEDROOM 2 (NW) ===== -->
+  <rect x="91" y="940" width="140" height="110" class="room-light" />
+  <text x="161" y="980" class="text-label">BEDROOM 2</text>
+  <text x="161" y="995" class="text-small">(North-West)</text>
+  <text x="161" y="1010" class="text-small">12' × 12'</text>
+
+  <!-- ===== BEDROOM 3 (SE) ===== -->
+  <rect x="240" y="1030" width="190" height="150" class="room-light" />
+  <text x="335" y="1080" class="text-label">BEDROOM 3</text>
+  <text x="335" y="1095" class="text-small">(South-East)</text>
+  <text x="335" y="1110" class="text-small">12' × 12'</text>
+
+  <!-- Attached bath for BR3 -->
+  <rect x="240" y="1140" width="70" height="40" class="bath" />
+  <text x="275" y="1165" class="text-small">Att. Bath</text>
+
+  <!-- ===== COMMON BATHROOM (First floor - North side) ===== -->
+  <rect x="240" y="940" width="80" height="70" class="bath" />
+  <text x="280" y="975" class="text-label">Common</text>
+  <text x="280" y="990" class="text-small">Bathroom</text>
+
+  <!-- ===== BALCONY / OPEN TERRACE (East side) ===== -->
+  <rect x="330" y="940" width="100" height="80" class="room" fill="#e8e8c8" />
+  <text x="380" y="975" class="text-label">Balcony</text>
+  <text x="380" y="990" class="text-small">(East - Vastu)</text>
+
+  <!-- ===== STAIRCASE (continues from GF) ===== -->
+  <rect x="91" y="1230" width="80" height="80" class="stairs" />
+  <text x="131" y="1265" class="text-label">STAIRS</text>
+  <text x="180" y="1265" class="text-small">↑ Up to Terrace</text>
+  <line x1="95" y1="1250" x2="165" y2="1250" stroke="#888" stroke-width="1.5" />
+  <line x1="95" y1="1265" x2="165" y2="1265" stroke="#888" stroke-width="1.5" />
+
+  <!-- ===== PASSAGE/HALL ===== -->
+  <rect x="180" y="1190" width="120" height="50" class="room" fill="#f0f0e8" />
+  <text x="240" y="1220" class="text-small">Passage</text>
+
+  <!-- ===== TERRACE MENTION ===== -->
+  <rect x="200" y="1250" width="230" height="50" class="room" fill="#e0e0d0" />
+  <text x="315" y="1275" class="text-label">Terrace Access & Utility</text>
+  <text x="315" y="1290" class="text-small">(South-West - Solar/Water Heater)</text>
+
+  <!-- Dimensions for First Floor -->
+  <line x1="50" y1="1680" x2="440" y2="1680" class="dim-line" />
+  <text x="245" y="1690" class="dim-text">26 ft (Same floor plate)</text>
+
+  <!-- ========== TITLE BLOCK ========== -->
+  <rect x="50" y="1720" width="1100" height="60" fill="#2c3e50" rx="5" />
+  <text x="600" y="1745" class="text-title" fill="white" font-size="14">Duplex House Plan | Plot: 26' × 52' | G+1+Terrace | Setbacks: East & North 2.75'</text>
+  <text x="600" y="1765" fill="#bbb" font-family="Arial" font-size="10" text-anchor="middle">Vastu Compliance: ✓ Kitchen SE | ✓ Master Bedroom SW | ✓ Living NE | ✓ Stair SW | ✓ Parking West | ✓ NE open</text>
+
+  <!-- Vastu compass indicator -->
+  <circle cx="1100" cy="100" r="45" fill="none" stroke="#2c3e50" stroke-width="1.5" />
+  <text x="1100" y="85" class="text-small" fill="#c0392b">N ⬆</text>
+  <text x="1100" y="155" class="text-small">S ⬇</text>
+  <text x="1050" y="120" class="text-small">W ←</text>
+  <text x="1150" y="120" class="text-small">→ E</text>
+  <text x="1100" y="110" class="text-label">Vastu</text>
+  <text x="1100" y="125" class="text-label">Directions</text>
+
+  <!-- Legend -->
+  <rect x="500" y="780" width="250" height="110" fill="white" stroke="#333" stroke-width="1" rx="5" />
+  <text x="625" y="800" class="text-label">LEGEND</text>
+  <rect x="510" y="810" width="20" height="15" fill="#fff9ef" stroke="#555" />
+  <text x="540" y="822" class="text-small">Living / Bedroom</text>
+  <rect x="510" y="830" width="20" height="15" fill="#d9e8f5" stroke="#555" />
+  <text x="540" y="842" class="text-small">Bathroom</text>
+  <rect x="510" y="850" width="20" height="15" fill="#e8e0d0" stroke="#777" stroke-dasharray="3" />
+  <text x="540" y="862" class="text-small">Parking</text>
+  <rect x="650" y="810" width="20" height="15" fill="#d9d2b3" stroke="#555" />
+  <text x="680" y="822" class="text-small">Stairs</text>
+  <rect x="650" y="830" width="20" height="15" fill="#d4e6c3" stroke="#8ba86b" stroke-dasharray="3" />
+  <text x="680" y="842" class="text-small">Setback 2.75'</text>
+</svg>
