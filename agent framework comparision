@@ -1,0 +1,730 @@
+I’ll compare the four frameworks—Google ADK, CrewAI, LangGraph, and Spring AI—across their architecture, strengths, limits, and enterprise readiness. The focus is on scalability, resilience, and high availability, especially for a demanding scenario like orchestrating 10,000 concurrent agents.
+
+---
+
+## 1. Framework Overviews
+
+**Google Agent Development Kit (ADK)**  
+An open-source Python framework by Google, deeply integrated with Google Cloud and Vertex AI. It offers a lightweight code-first approach with built-in tools, streaming, and multi-agent composition. Agents can be deployed as Vertex AI Agent Engine applications or Cloud Run services, leveraging Google’s infrastructure for scaling.
+
+**CrewAI**  
+A Python library for role-based multi-agent collaboration, built on LangChain. It defines crews of agents with distinct roles, goals, and tasks, orchestrating them via a sequential or hierarchical process. It’s straightforward for rapid prototyping of collaborative AI teams.
+
+**LangGraph**  
+A low-level, graph-based framework by LangChain for building stateful, multi-actor agent applications. It models agents as nodes and edges in a directed graph, with built-in checkpointing, human-in-the-loop, and streaming. LangGraph Cloud provides durable, long-running execution with serverless scaling.
+
+**Spring AI**  
+A Java framework from the Spring ecosystem that brings AI integration patterns (chat, embeddings, function calling) to Spring Boot applications. It supports reactive streams, robust error handling, and integrates with the Spring family for enterprise-grade resilience, observability, and messaging. Agentic abstractions (like `Agent` and `ToolProxy`) are emerging to support multi-agent workflows.
+
+---
+
+## 2. Comparison at a Glance
+
+| Dimension               | Google ADK                          | CrewAI                               | LangGraph                             | Spring AI                                |
+| ----------------------- | ----------------------------------- | ------------------------------------ | ------------------------------------- | ---------------------------------------- |
+| **Language**            | Python                              | Python                               | Python (JS/TS also)                   | Java                                     |
+| **Core abstraction**    | Agent, Runner, Session, Tool        | Agent, Task, Crew, Process           | StateGraph, Nodes, Edges, Checkpoints | ChatClient, Advisor, ToolProxy, Agent    |
+| **Multi-agent pattern** | Hierarchical/multi-agent pipelines  | Pre-defined sequential or hierarchical crews | Arbitrary graph-based control flows | Emerging (multi-tool, ReAct, agent groups) |
+| **State management**    | In-memory session or external DB via connectors | No built-in durable state            | Built-in checkpointing (Postgres, SQLite, etc.) | Pluggable (JDBC, Redis, etc.) via Spring abstraction |
+| **Resilience**          | Relies on GCP infrastructure        | Minimal; relies on developer logic   | Durable execution with pause/resume, retries | Spring Retry, Resilience4j, message brokers |
+| **Scalability model**   | Cloud Run/VAI Agent Engine (serverless) | Single process unless combined with Celery/Ray | LangGraph Cloud (serverless, horizontal scaling) | Spring’s reactive stack, message-driven, K8s |
+| **High Availability**   | Multi-region GCP deployment         | Not built-in                         | Backed by LangGraph Cloud's infrastructure | Standard Spring Cloud patterns, clustered services |
+| **Observability**       | Cloud Logging, Monitoring, OpenTelemetry | Limited, print/logs                  | LangSmith tracing, custom metrics     | Micrometer, Sleuth, Zipkin, Prometheus    |
+| **Ecosystem lock-in**   | Strong GCP ties, but open-source     | Not tied to any cloud                | Vendor-neutral but LangSmith is SaaS  | Strong Spring/Java ecosystem, cloud-agnostic |
+
+---
+
+## 3. Detailed Advantages & Disadvantages
+
+### Google ADK
+**Advantages**  
+- Native integration with Gemini models, Vertex AI, and Google Cloud services (Pub/Sub, Firestore, BigQuery).  
+- Serverless deployment via Vertex AI Agent Engine, giving automatic scaling and high availability with zero infrastructure management.  
+- Built-in session management and streaming; can handle thousands of parallel sessions when backed by Cloud Run’s concurrency.  
+- Open-source core; can be extended or self-hosted, though cloud features shine on GCP.
+
+**Disadvantages**  
+- Heavy reliance on Google Cloud for production-grade scaling, resilience, and monitoring.  
+- Newer ecosystem with limited community versus LangChain/LangGraph.  
+- Fewer multi-agent orchestration primitives (graphs) compared to LangGraph; mostly linear or hierarchical pipelines.  
+- Not natively designed for cross-cloud deployments (though you can run agents elsewhere, you lose built-in HA/scaling).
+
+### CrewAI
+**Advantages**  
+- Simple, intuitive model of role-based agents—excellent for quick prototyping and content-generation use cases.  
+- Abstraction over LLM interactions reduces boilerplate; integrates easily with any LangChain-compatible LLM.  
+- Good for demonstrating “team of agents” patterns without deep graph design.
+
+**Disadvantages**  
+- No native durable state or checkpointing; long-running orchestrations may lose progress on failure.  
+- Scalability limited to single-process execution. To handle 10k concurrent agents, you must manually integrate with task queues (Celery, BullMQ) or distributed frameworks, which adds complexity.  
+- Resilience and fault tolerance are left entirely to the developer; no built-in retry, circuit breaking, or recovery.  
+- Observability is minimal—hard to debug at scale without adding custom logging/metrics.  
+- Lacks enterprise security features (e.g., audit logs, fine-grained access control) out of the box.
+
+### LangGraph
+**Advantages**  
+- Expressive, graph-based state machine for complex, branching, and looping agent logic.  
+- Built-in durable execution with checkpointing → agents can pause, resume, and recover from failures, essential for high-scale, long-running workflows.  
+- LangGraph Cloud (or self-hosted server) enables serverless horizontal scaling with exactly-once execution semantics and fault tolerance.  
+- Rich multi-agent patterns: human-in-the-loop, parallel node execution, map-reduce over sub-tasks.  
+- Language-agnostic (Python, JS/TS), large community, integrates with many model providers.
+
+**Disadvantages**  
+- Steeper learning curve: you need to think in terms of state graphs, nodes, and conditional edges.  
+- Overkill for simple sequential agents.  
+- Scaling to 10k concurrent agent *instances* requires careful infrastructure design (e.g., number of partitions, checkpoint DB load). LangGraph Cloud handles much of this but is a paid service.  
+- Debugging complex graphs can be challenging without LangSmith (SaaS for tracing).  
+- Python stack may not align with existing Java-heavy enterprise ecosystems.
+
+### Spring AI
+**Advantages**  
+- Mature Java ecosystem: Spring Boot gives you instant access to security, metrics, databases, messaging (RabbitMQ, Kafka), and resilience patterns (Resilience4j).  
+- Reactive and non-blocking via Project Reactor, enabling high concurrency with low resource use—ideal for handling thousands of agent sessions in a single JVM.  
+- Declarative retries, circuit breakers, rate limiting, and transaction management.  
+- Excellent observability through Micrometer, distributed tracing, and health checks.  
+- Cloud-agnostic: deployable on Kubernetes, Cloud Foundry, or any platform; scales horizontally with standard Spring Cloud patterns (service discovery, config server).  
+- Agent abstractions (like `Agent` with `ToolProxy`) are now taking shape, building on top of solid function-calling support.
+
+**Disadvantages**  
+- AI agent support is less mature than Python-based frameworks; advanced multi-agent graph logic may require custom implementation.  
+- Heavier runtime per instance compared to lightweight Python services, but JVM can still achieve high throughput with reactive programming.  
+- Smaller community in the agentic AI space; fewer ready-made agent patterns.  
+- Requires strong Java/Spring expertise; not a fit for teams that prefer Python for AI development.
+
+---
+
+## 4. When to Choose What (Including the 10,000-Agent Enterprise Scenario)
+
+### Choose **Google ADK** if:
+- You are deeply invested in Google Cloud and want the fastest path to deploy agent-based applications with automatic scaling and minimal ops.
+- Your agent workflows are relatively linear or hierarchical, not needing advanced branching and human-in-the-loop.
+- You value seamless integration with Gemini and Vertex AI’s ecosystem, and you can accept vendor coupling.
+- **10k agents**: Leverage Vertex AI Agent Engine or Cloud Run with Pub/Sub for asynchronous message-driven dispatching, where each agent invocation is a stateless task. GCP’s infrastructure can handle the load, but you must design sessions and state externalization properly.
+
+### Choose **CrewAI** if:
+- You need to prototype a role-based multi-agent collaboration in days, not weeks, and the use case is not mission-critical (e.g., content generation, research summarization).
+- Scale and resilience are not primary requirements (you do not expect to run thousands of concurrent long-running crews).
+- **10k agents**: Generally **not recommended** for enterprise‑grade deployments of that magnitude unless you plan to heavily custom-build a distributed execution layer (e.g., wrap CrewAI in Celery workers, add a persistence layer, and manage your own HA). It can become a significant engineering effort that negates CrewAI’s simplicity advantage.
+
+### Choose **LangGraph** if:
+- You need complex, stateful agent logic with branching, looping, parallel execution, and human-in-the-loop.
+- Durability is critical: agents must survive failures and resume exactly where they left off.
+- You want a framework that already provides horizontal scaling, fault tolerance, and built-in checkpointing (via LangGraph Cloud or self-hosted with a DB backend).
+- **10k agents**: LangGraph is designed for this. Use LangGraph Cloud’s serverless deployment with auto-scaling, combined with a scalable checkpoint database (Postgres with connection pooling). You can run thousands of concurrent agent instances, each with their own state, and benefit from durable, exactly-once processing. For self-hosting, combine with Kubernetes and a message queue; the graph architecture makes it easier to reason about parallelism and failure domains.
+
+### Choose **Spring AI** if:
+- Your enterprise operates predominantly in Java/Spring and requires strict integration with existing microservice architecture, databases, message brokers, and security frameworks.
+- You value a robust, cloud-agnostic platform with well-understood patterns for resilience (circuit breakers, retries, bulkheads) and observability.
+- Your agents primarily leverage tool calling, RAG, and functional agents; you can implement more complex orchestration with Spring’s state machine or custom logic.
+- **10k agents**: Spring AI on a reactive stack (WebFlux) can handle massive concurrency with low thread overhead. Combined with message-driven communication (Kafka, RabbitMQ), you can build a resilient, distributed agent system. State persistence via Spring Data (Redis, Postgres) and workload orchestration through Spring Cloud Data Flow or Temporal enables large-scale agent workflows. The main trade‑off is that you’ll need to build some of the advanced graph‑like state management that LangGraph offers natively, but you gain the entire Spring ecosystem’s maturity.
+
+---
+
+## 5. Why Choose One Framework Over Another for Enterprise-Scale Agents
+
+**Resilience & High Availability**  
+- LangGraph: Built-in durable execution with checkpointing; agents automatically resume after outage.  
+- Google ADK: Inherits GCP’s high availability (multi-region, auto-healing Cloud Run).  
+- Spring AI: Leverages battle-tested Spring Cloud resilience and messaging patterns; can achieve 99.99% uptime with proper architecture.  
+- CrewAI: No inherent support; must be custom-built.
+
+**Scalability (Handling 10,000 Agents)**  
+- Scalability isn’t just about language performance—it’s about state management, concurrency, and infrastructure.  
+- LangGraph and Google ADK are designed to run agents as scalable, stateful services. Spring AI can match that using reactive streams and message-driven architectures but needs more upfront design.  
+- CrewAI is essentially a library, not a runtime platform, and will break down at 10k agents unless heavily re-architected.
+
+**Operational Maturity**  
+- Spring AI fits enterprises already running hundreds of microservices on Spring Boot; integrating AI agents becomes an extension of existing DevOps practices.  
+- Google ADK lowers the ops burden if you’re already on GCP.  
+- LangGraph Cloud offers managed scaling, but you’re adopting a Python-centric runtime and may need to integrate with non‑Python services.  
+- CrewAI’s operational story is minimal.
+
+**Developer Experience & Team Skill Set**  
+- Python teams with complex logic → LangGraph (or Google ADK if on GCP).  
+- Java/Spring teams building enterprise-grade systems → Spring AI.  
+- Teams wanting a fast demo → CrewAI, but plan to replace it for production at scale.
+
+**Vendor Lock-in vs. Flexibility**  
+- Google ADK ties you to GCP for the full operational benefits.  
+- LangGraph is open-source and cloud-agnostic; LangSmith/LangGraph Cloud are optional paid services.  
+- Spring AI is entirely open and cloud-agnostic.  
+- CrewAI is open but requires DIY platform engineering.
+
+---
+
+## Conclusion
+For an enterprise-grade system managing 10,000 agents with strict scalability, resilience, and high availability requirements, **LangGraph** and **Spring AI** are the strongest contenders, depending on your tech stack. **LangGraph** offers the most mature, purpose-built runtime for complex stateful agent workflows. **Spring AI** provides the ultimate control and integration for Java-centric organizations that are willing to build the advanced orchestration they need on top of a solid reactive foundation. **Google ADK** is a compelling choice if your cloud strategy is centered on Google Cloud and you need a simpler, serverless-first agent platform. **CrewAI** is best left for lightweight prototyping, not for massive production deployments.
+
+
+
+
+For your use case, the comparison should not be based on "which framework has the most features." It should be based on **enterprise architecture**.
+
+Given your background (Java Architect, Spring Boot, Kafka, Azure, messaging, enterprise banking), your requirements are much different from someone building a chatbot.
+
+Your requirements are:
+
+* 10,000+ concurrent agents
+* Distributed execution
+* High Availability
+* Fault Tolerance
+* Stateful workflows
+* Human approval
+* Enterprise security
+* Observability
+* Long-running workflows
+* Integration with Kafka, MQ, Oracle, REST
+* Kubernetes deployment
+* Horizontal scaling
+
+These requirements immediately eliminate many frameworks as the primary orchestration layer.
+
+---
+
+# Enterprise AI Agent Architecture
+
+Instead of asking
+
+> Which framework is best?
+
+Enterprise companies ask
+
+> Which framework fits into our architecture?
+
+The architecture generally looks like
+
+```
+                 User/API
+
+                    │
+
+          Spring Boot Gateway
+
+                    │
+
+      ------------------------------
+      |            |               |
+ Agent Service  Agent Service   Agent Service
+      |            |               |
+
+        LangGraph / Google ADK
+
+                    │
+
+      ----------------------------
+      |     |      |      |      |
+
+     LLM   Kafka  DB   Vector DB  Tools
+
+                    │
+
+             Kubernetes
+
+```
+
+Notice that
+
+Spring Boot isn't competing with LangGraph.
+
+Spring Boot hosts the agent.
+
+---
+
+# Framework Comparison
+
+| Feature             | Google ADK            | LangGraph | CrewAI    | Spring AI             |
+| ------------------- | --------------------- | --------- | --------- | --------------------- |
+| Language            | Python (Java preview) | Python    | Python    | Java                  |
+| Multi-agent         | Excellent             | Excellent | Excellent | Limited               |
+| Workflow            | Excellent             | Excellent | Basic     | Good                  |
+| Stateful            | Yes                   | Excellent | Limited   | Depends               |
+| Memory              | Built-in              | Excellent | Basic     | Good                  |
+| Enterprise Ready    | Emerging              | Excellent | Medium    | Excellent             |
+| Kubernetes Friendly | Yes                   | Yes       | Yes       | Excellent             |
+| Spring Integration  | Weak                  | Medium    | Weak      | Native                |
+| Java Support        | Preview               | No        | No        | Native                |
+| Community           | Growing               | Huge      | Huge      | Growing               |
+| Production Maturity | Medium                | High      | Medium    | High (Java ecosystem) |
+
+---
+
+# Google ADK
+
+Google released ADK specifically for enterprise agent development.
+
+It is inspired by LangGraph but focuses on modular agents.
+
+Architecture
+
+```
+Root Agent
+
+    |
+
+----------------------
+
+Planner
+
+Executor
+
+Retriever
+
+Critic
+
+```
+
+Advantages
+
+✅ Hierarchical Agents
+
+✅ Built-in Tool calling
+
+✅ Session Management
+
+✅ Event based
+
+✅ Parallel execution
+
+✅ Native Gemini support
+
+✅ Good MCP support
+
+Disadvantages
+
+❌ Young
+
+❌ Smaller community
+
+❌ Mostly Python today
+
+❌ Limited production references
+
+Choose ADK when
+
+* Building Gemini-first applications
+* Need agent hierarchy
+* Want Google ecosystem
+* Need MCP
+
+---
+
+# LangGraph
+
+This is currently considered the gold standard for agent workflows.
+
+Instead of
+
+Prompt → LLM → Output
+
+it models
+
+```
+State
+
+↓
+
+Node
+
+↓
+
+Decision
+
+↓
+
+Node
+
+↓
+
+Loop
+
+↓
+
+Finish
+```
+
+Advantages
+
+✅ Best workflow engine
+
+✅ Durable execution
+
+✅ Checkpointing
+
+✅ Resume
+
+✅ Human approval
+
+✅ Parallel nodes
+
+✅ Dynamic routing
+
+✅ State persistence
+
+✅ Easy debugging
+
+Disadvantages
+
+❌ Python only
+
+❌ Requires LangChain knowledge
+
+❌ Learning curve
+
+Choose LangGraph when
+
+* Long workflows
+* Banking
+* Insurance
+* Healthcare
+* Enterprise automation
+
+---
+
+# CrewAI
+
+CrewAI models an organization.
+
+Example
+
+```
+CEO Agent
+
+↓
+
+Architect Agent
+
+↓
+
+Developer Agent
+
+↓
+
+Tester Agent
+
+↓
+
+Reviewer Agent
+
+```
+
+Advantages
+
+Very easy
+
+Excellent for demos
+
+Easy multi-agent collaboration
+
+Simple APIs
+
+Disadvantages
+
+Workflow not as powerful
+
+Limited persistence
+
+Scaling becomes difficult
+
+Less control
+
+Choose CrewAI when
+
+* PoC
+* Startup
+* Internal tools
+* Small automation
+
+Not ideal for 10,000 agents.
+
+---
+
+# Spring AI
+
+Spring AI isn't an agent framework.
+
+It is an AI integration framework.
+
+Think of it as
+
+Spring Boot
+
+*
+
+OpenAI
+
+*
+
+Anthropic
+
+*
+
+Azure
+
+*
+
+RAG
+
+*
+
+Prompt
+
+*
+
+Tools
+
+Advantages
+
+Native Java
+
+Excellent Spring integration
+
+Dependency Injection
+
+Security
+
+Spring Cloud
+
+Spring Batch
+
+Kafka
+
+RabbitMQ
+
+Observability
+
+Spring Security
+
+Disadvantages
+
+Agent orchestration is basic compared to LangGraph or ADK.
+
+Choose Spring AI when
+
+You're already building enterprise Java services.
+
+---
+
+# Scalability Comparison
+
+| Feature               | ADK       | LangGraph | CrewAI  | Spring AI    |
+| --------------------- | --------- | --------- | ------- | ------------ |
+| Stateless execution   | Yes       | Yes       | Yes     | Yes          |
+| Distributed execution | Good      | Excellent | Medium  | Excellent    |
+| Checkpoint            | Yes       | Excellent | Limited | Custom       |
+| Retry                 | Yes       | Excellent | Limited | Spring Retry |
+| HA                    | Good      | Excellent | Medium  | Excellent    |
+| Kubernetes            | Excellent | Excellent | Good    | Excellent    |
+| Horizontal Scaling    | Excellent | Excellent | Medium  | Excellent    |
+
+---
+
+# Managing 10,000 Agents
+
+This is where architecture matters more than framework.
+
+Never deploy
+
+```
+10000 agents
+
+inside
+
+1 JVM
+```
+
+Instead
+
+```
+Kafka
+
+↓
+
+Agent Scheduler
+
+↓
+
+Kubernetes
+
+↓
+
+100 Pods
+
+↓
+
+100 Agents each
+
+↓
+
+10000 agents
+
+```
+
+Framework only controls agent logic.
+
+Kubernetes controls scaling.
+
+---
+
+# Enterprise Architecture
+
+```
+                API Gateway
+
+                     │
+
+             Spring Boot
+
+                     │
+
+        Agent Orchestrator
+
+                     │
+
+        Kafka Event Bus
+
+                     │
+
+────────────────────────────────────
+
+Agent Pod 1
+
+Agent Pod 2
+
+Agent Pod 3
+
+...
+
+Agent Pod 500
+
+────────────────────────────────────
+
+Each pod hosts
+
+LangGraph
+
+or
+
+Google ADK
+
+```
+
+---
+
+# Resilience
+
+Enterprise architecture should include
+
+* Kafka buffering
+* Dead Letter Queue
+* Retry
+* Circuit Breaker
+* Agent checkpointing
+* Redis session cache
+* PostgreSQL state
+* Kubernetes restart
+* Autoscaling
+* Prometheus metrics
+* Grafana dashboards
+
+Framework alone doesn't provide all of this.
+
+---
+
+# High Availability
+
+Recommended deployment
+
+```
+3 Kubernetes clusters
+
+↓
+
+Load Balancer
+
+↓
+
+Spring Boot
+
+↓
+
+Kafka Cluster
+
+↓
+
+Redis Cluster
+
+↓
+
+Postgres Cluster
+
+↓
+
+LLM Gateway
+
+↓
+
+Agent Workers
+```
+
+---
+
+# Performance
+
+Approximate production capability
+
+| Framework | Agents                   |
+| --------- | ------------------------ |
+| CrewAI    | Hundreds                 |
+| ADK       | Thousands                |
+| LangGraph | Thousands+               |
+| Spring AI | Depends on orchestration |
+
+The limiting factor is almost never the framework—it's LLM latency, state storage, tool execution, and infrastructure design.
+
+---
+
+# Which Should You Choose?
+
+| Scenario                                                         | Recommendation                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------------- |
+| Banking workflows with approvals, resumability, and audit trails | **LangGraph**                                        |
+| Google Gemini-centric ecosystem with hierarchical agents and MCP | **Google ADK**                                       |
+| Fast prototypes and collaborative multi-agent demos              | **CrewAI**                                           |
+| Existing Spring Boot microservices requiring AI integration      | **Spring AI**                                        |
+| Large Java enterprise with Kafka, Oracle, MQ, REST, Kubernetes   | **Spring AI + LangGraph (or ADK where appropriate)** |
+
+## Recommendation for your environment
+
+Considering your experience with enterprise Java, Spring Boot, Kafka, IBM MQ, Oracle, Kubernetes, Azure, and financial services, I would not recommend using a pure Python agent framework as the entire application platform.
+
+A more suitable enterprise architecture is:
+
+* **Spring AI** for the application layer, dependency injection, security, observability, and integration with enterprise systems.
+* **LangGraph** (or **Google ADK** if you standardize on the Google AI ecosystem) as the agent orchestration engine for complex workflows.
+* **Kafka** for asynchronous communication and decoupling.
+* **Redis** or a database for distributed agent state and checkpointing.
+* **Kubernetes** with autoscaling for resilience and horizontal scaling.
+* **Prometheus**, **Grafana**, and distributed tracing for operational visibility.
+
+This separation of concerns lets each technology do what it does best: Spring manages enterprise service concerns, the agent framework manages reasoning and workflow, and Kubernetes plus Kafka provide the scalability and resiliency needed to support deployments on the order of **10,000 concurrent agents**.
+
+Given the enterprise scale you're targeting, the framework choice is only one part of the solution. The architecture around it—state management, scheduling, messaging, observability, and deployment—is what ultimately determines whether the system can reliably support thousands of agents in production.
+
+
+
+Now I have enough data to build a comprehensive comparison. Let me create a rich interactive artifact.Here's a summary of the key takeaways from the comparison, especially for your enterprise requirement of managing 10,000+ agents:
+
+**Framework personalities in one line:**
+- ADK wins on deployment speed for Google Cloud teams, LangGraph wins on control and observability for complex branching workflows, and CrewAI still wins for prototyping.
+- Spring AI wins when your organization is Java-first and can't afford a Python runtime alongside existing microservices.
+
+**For your scale requirement (10k agents, resilient, HA):**
+
+LangGraph is the most production-hardened framework with checkpointing and durable execution. That checkpointing is the key to resilience — if an agent fails mid-task, it can resume from the last saved state rather than restarting from scratch.
+
+Java frameworks like Spring Boot are engineered from the ground up to handle massive concurrency and distributed systems, delivering superior sustained execution speed — a critical requirement for high-volume transaction processing and responsive agentic AI services.
+
+The honest recommendation at 10k-agent scale is a **hybrid architecture**, not a single framework. Use LangGraph for orchestration/state, Spring AI for the execution layer's HA and concurrency, and ADK or CrewAI where their specific strengths apply (multimodal, rapid team expansion). The A2A and MCP protocols — all four frameworks support them as of 2026 — allow this hybrid without tight coupling, since agents from different frameworks can collaborate through standardized interfaces.
+
+One important note: AutoGen has moved to maintenance mode — teams with existing AutoGen deployments should plan migration. If you're evaluating that framework as well, it's off the table for new enterprise projects.
